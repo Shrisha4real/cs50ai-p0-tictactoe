@@ -140,34 +140,34 @@ def terminal(board):
     # return False
 
 
-def minimax(board):
-    """
-    Returns the optimal action for the current player on the board.
-    """
-    optimal = None
-    def retrunMinimax(board ):
-        nonlocal optimal
-        if terminal(board):
-            return utility(board)
+def minimax_score(board):
+    if terminal(board):
+        return utility(board)
 
-        turn = player(board)
-        if turn==X :
-            bestScore= -float('inf')
-            for action in actions(board):
-                score = retrunMinimax(result(board , action))
-                if score > bestScore:
-                    optimal = action
-                    bestScore = score
-            return bestScore
+    current_player = player(board)
+    scores = [minimax_score(result(board, action)) for action in actions(board)]
+    
+    return max(scores) if current_player == X else min(scores)
+
+def minimax(board):
+    if terminal(board):
+        return None
+
+    current_player = player(board)
+    best_score = -float('inf') if current_player == X else float('inf')
+    best_move = None
+
+    for action in actions(board):
+        new_board = result(board, action)
+        score = minimax_score(new_board)
+        
+        if current_player == X:
+            if score > best_score:
+                best_score = score
+                best_move = action
         else:
-            bestScore= (float('inf'))
-            for action in actions(board):
-                score = retrunMinimax(result(board , action))
-                if score < bestScore:
-                    optimal = action
-                    bestScore = score
-            return bestScore
-    
-    v = retrunMinimax(board )
-    
-    return optimal
+            if score < best_score:
+                best_score = score
+                best_move = action
+
+    return best_move
